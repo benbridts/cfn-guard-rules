@@ -1,0 +1,10 @@
+let s3_buckets = Resources.*[ Type == 'AWS::S3::Bucket' ]
+let dynamodb_tables = Resources.*[ Type == 'AWS::DynamoDB::Table' ]
+
+rule s3_bucket_names when %s3_buckets !empty {
+    %s3_buckets.Properties.BucketName not exists <<BucketName should not be specified>>
+}
+
+rule dynamodb_table_names when %dynamodb_tables !empty {
+    %dynamodb_tables.Properties.TableName not exists <<TableName should not be specified>>
+}
