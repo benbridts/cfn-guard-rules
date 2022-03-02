@@ -1,0 +1,51 @@
+---
+- name: empty [SKIP]
+  input: {}
+  expectations:
+    rules:
+      s3_intelligent_tiering: SKIP
+- name: S3 without tiering [FAIL]
+  input:
+    Resources:
+      Bucket1:
+        Type: AWS::S3::Bucket
+  expectations:
+    rules:
+      s3_intelligent_tiering: FAIL
+- name: S3 without tiering [SKIP]
+  input:
+    Resources:
+      Bucket1:
+        Type: AWS::S3::Bucket
+        Metadata:
+          CfnGuard:
+            Ignore: [s3_intelligent_tiering]
+  expectations:
+    rules:
+      s3_intelligent_tiering: SKIP
+
+- name: S3 with tiering [PASS]
+  input:
+    Resources:
+      Bucket1:
+        Type: AWS::S3::Bucket
+        Properties:
+          IntelligentTieringConfigurations:
+            # other proerties omitted, cfn-lint will check for them
+            - Status: Enabled
+  expectations:
+    rules:
+      s3_intelligent_tiering: PASS
+- name: S3 with tiering disabled [FAIL]
+  input:
+    Resources:
+      Bucket1:
+        Type: AWS::S3::Bucket
+        Properties:
+          IntelligentTieringConfigurations:
+            # other proerties omitted, cfn-lint will check for them
+            - Status: Disabled
+  expectations:
+    rules:
+      s3_intelligent_tiering: FAIL
+

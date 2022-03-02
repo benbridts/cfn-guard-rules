@@ -1,0 +1,15 @@
+let s3_buckets = Resources.*[ Type == 'AWS::S3::Bucket' ]
+
+
+rule s3_intelligent_tiering when %s3_buckets !empty {
+    %s3_buckets {
+        let ignore = Metadata.CfnGuard.Ignore[some this == "s3_intelligent_tiering"]
+        when %ignore empty {
+            Properties.IntelligentTieringConfigurations exists <<Intelligent Tiering should be configured>>
+            when Properties.IntelligentTieringConfigurations exists {
+                Properties.IntelligentTieringConfigurations[*].Status == "Enabled" <<Intelligent Tiering should be enabled>>
+            }
+        }
+    }
+}
+
